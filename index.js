@@ -63,7 +63,28 @@ app.delete("/notes/:id",(req,res)=>{
     notes=notes.filter(o=>o.id===!ids);
     res.json({
         message:"successfully deleted",
-        deletednotes:obj
+        deletednote:obj
+    })
+})
+
+app.put("/notes/:id",(req,res)=>{
+    let ids=req.params.id;
+    ids=Number(ids);
+    if(!ids){
+        res.status(400).json({
+            message:"Invalid id"
+        })
+    }
+    let note=notes.find(o=>o.id===ids);
+    if(req.body.title){
+        note.title=req.body.title;
+    }
+    if(req.body.content){
+        note.content=req.body.content;
+    }
+    res.json({
+        message:"successfully changed",
+        updatednote:note
     })
 })
 app.listen(port,()=>{
