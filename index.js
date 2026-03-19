@@ -3,26 +3,13 @@ const pool=require("./db");
 const express=require('express');
 const app=express();
 const port=3000;
+const notesroute=require("./routes/notes");
 app.use(express.json());
 
 app.get("/",(req,res)=>{
     res.send("hello welcome to my node server");
 });
-
-app.get("/notes",async (req,res)=>{
-    const data=await pool.query("SELECT * FROM NOTES");
-    res.json(data.rows);
-})
-app.post("/notes",async (req,res)=>{
-    if(!req.body.title || !req.body.content){
-        return res.status(400).json({
-            message:"values not specified"
-        })
-    }
-    const data=await pool.query("INSERT INTO NOTES (title,content) VALUES ($1,$2) RETURNING *",[req.body.title,req.body.content]);
-    res.json(data.rows[0]);
-})
-
+app.use("/",notesroute);
 app.get("/notes/:id",async (req,res)=>{
     let ids=req.params.id;
     if(!Number(ids)){
