@@ -2,15 +2,17 @@ const express=require("express");
 const router=express.Router();
 const pool=require("../db");
 const { getNotes,createNotes,getNotesById,deleteNote,updateNote }=require("../controllers/notescontroller");
+const { validateNote,validateId,logger }=require("../middleware/validateNote");
+
 router.get("/notes",getNotes);
 
-router.post("/notes",createNotes);
+router.post("/notes",validateNote,createNotes);
 
-router.get("/notes/:id",getNotesById);
+router.get("/notes/:id",validateId,getNotesById);
 
-router.delete("/notes/:id",deleteNote);
+router.delete("/notes/:id",validateId,deleteNote);
 
-router.put("/notes/:id",updateNote);
+router.put("/notes/:id",validateId,updateNote);
 
 
 module.exports=router;
