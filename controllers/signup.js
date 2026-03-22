@@ -1,5 +1,6 @@
 const pool=require("../db");
 const bycrypt=require("bcrypt");
+const jwt=require("jsonwebtoken");
 
 const signUp=async (req,res,next)=>{
     try{
@@ -25,4 +26,31 @@ catch(err){
     next(err);
 }
 }
-module.exports={signUp};
+const login=async (req,res,next)=>{
+    try{
+    email=req.body.email;
+    password=req.body.password;
+    if(!email || !password){
+        return res.status(400).json({message:"missing value"});
+    }
+    const result=await pool.query("SELECT * FROM users WHERE email=$1",[email]);
+    if(!result.rows[0]){
+        return res.status(400).json({message:"Invalid values"});
+    }
+    const checkPassword=await bycrypt.compare(password,result.rows[0].password_hash);
+    if(!checkPassword){
+        return res.status(400).json({message:"wrong password"});
+    }
+    const token=await jwt.sign({userid:result.rows[0].user_id},process.env.JWT_SECRET,{expiresIn:"1hr"});
+    res.json({
+        message:"login successful",
+        token:token,
+        user_id:result.rows[0].user_id,
+        email:email
+    })
+}
+catch(err){
+    next(err);
+}
+}
+module.exports={signUp,login};
