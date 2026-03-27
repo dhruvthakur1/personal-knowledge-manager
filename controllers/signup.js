@@ -41,7 +41,7 @@ const login=async (req,res,next)=>{
     if(!checkPassword){
         return res.status(400).json({message:"wrong password"});
     }
-    const token=await jwt.sign({userid:result.rows[0].user_id},process.env.JWT_SECRET,{expiresIn:"1hr"});
+    const token=await jwt.sign({userid:result.rows[0].user_id},process.env.JWT_SECRET,{expiresIn:"1h"});
     res.json({
         message:"login successful",
         token:token,
